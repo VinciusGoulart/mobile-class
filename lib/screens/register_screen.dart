@@ -156,7 +156,7 @@ class _RegisterScreenContent extends StatelessWidget {
                           : () async {
                               final success = await provider.register(context);
                               if (success) {
-                                Navigator.pushReplacementNamed(context, '/home');
+                                Navigator.pushReplacementNamed(context, '/login');
                               }
                             },
                       child: provider.isLoading
