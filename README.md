@@ -111,8 +111,4 @@ Contribuições são bem-vindas! Para contribuir:
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## 📧 Contato
 
-Para mais informações ou suporte, entre em contato:
-- Email: suporte@roteipro.com
-- Website: www.roteipro.com
