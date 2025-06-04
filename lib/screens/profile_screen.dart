@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/auth_service.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/sidebar.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -8,8 +8,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
-    final user = authService.currentUser;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.currentUser!;
 
     return Scaffold(
       appBar: AppBar(

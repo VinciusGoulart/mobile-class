@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:roteipro/models/route_model.dart';
 import '../providers/route_provider.dart';
 import '../widgets/route_card.dart';
 import '../widgets/sidebar.dart';
@@ -29,7 +30,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => Provider.of<RouteProvider>(context, listen: false).refreshRoutes(),
+            onPressed: () => Provider.of<RouteProvider>(context, listen: false)
+                .refreshRoutes(),
           ),
         ],
       ),
@@ -107,7 +109,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildRoutesList(RouteProvider provider) {
     final routes = provider.dashboardRoutes;
-    
+
     if (routes.isEmpty) {
       return Center(
         child: Column(
@@ -131,7 +133,132 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: routes.length,
-      itemBuilder: (context, index) => RouteCard(route: routes[index]),
+      itemBuilder: (context, index) {
+        final route = routes[index];
+
+        return GestureDetector(
+          onLongPress: () => _showRouteActionsModal(context, route, provider),
+          child: RouteCard(route: route),
+        );
+      },
+    );
+  }
+
+  void _showRouteActionsModal(
+      BuildContext context, RouteModel route, RouteProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        String selectedStatus = route.status;
+
+        List<String> allStatus = [
+          'Atrasada',
+          'Cancelada',
+          'Em andamento',
+          'Pendente',
+          'Concluída'
+        ];
+
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Ações para "${route.name}"',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: selectedStatus,
+                decoration: const InputDecoration(
+                  labelText: 'Status',
+                  border: OutlineInputBorder(),
+                ),
+                items: allStatus
+                    .map((status) {
+                  return DropdownMenuItem<String>(
+                    value: status,
+                    child: Text(status),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    selectedStatus = value;
+                  }
+                },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                spacing: 5,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.save),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: EdgeInsets.all(9.0)),
+                    onPressed: () async {
+                      await provider.updateRouteStatus(
+                          route.id, selectedStatus);
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Status atualizado com sucesso!'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    },
+                    label: const Text('Atualizar Status'),
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.delete),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: EdgeInsets.all(9.0)),
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Confirmar Exclusão'),
+                          content:
+                              const Text('Deseja realmente excluir esta rota?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancelar'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text('Excluir'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        await provider.deleteRoute(route.id);
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Rota excluída com sucesso!'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    label: const Text('Excluir Rota'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -146,9 +273,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.chevron_left),
-            onPressed: provider.currentPage > 0
-                ? provider.previousPage
-                : null,
+            onPressed: provider.currentPage > 0 ? provider.previousPage : null,
           ),
           Text(
             'Página ${provider.currentPage + 1} de ${provider.totalPages}',
@@ -164,4 +289,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
-} 
+}

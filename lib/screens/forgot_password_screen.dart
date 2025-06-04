@@ -54,14 +54,9 @@ class ForgotPasswordScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () async {
+                onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    final success = await provider.sendCode();
-                    if (success) {
-                      if (context.mounted) {
-                        Navigator.pushNamed(context, '/code-verification');
-                      }
-                    }
+                    provider.resetPassword(context, _emailController.text);
                   }
                 },
                 child: const Text('Enviar Código'),
@@ -77,4 +72,4 @@ class ForgotPasswordScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}

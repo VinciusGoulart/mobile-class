@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/settings_provider.dart';
-import '../services/auth_service.dart';
-import '../models/user_model.dart';
+
+import '../providers/auth_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -35,7 +34,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInitialized) {
-      final user = context.read<AuthService>().currentUser;
+      final user = context.read<AuthProvider>().currentUser!;
       if (user == null) {
         Navigator.pop(context);
         return;
@@ -58,61 +57,57 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _updateProfile() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+  setState(() => _isLoading = true);
 
-    try {
-      final authService = context.read<AuthService>();
-      final settingsProvider = context.read<SettingsProvider>();
+  final authProvider = context.read<AuthProvider>();
 
-      // Verificar se a senha atual está correta
-      if (_currentPasswordController.text.isNotEmpty) {
-        if (_currentPasswordController.text != authService.currentUser?.password) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Senha atual incorreta')),
-          );
-          return;
-        }
-      }
+  try {
+    final success = await authProvider.updateProfile(
+      name: _nameController.text.trim(),
+      phone: _phoneController.text.trim(),
+      currentPassword: _currentPasswordController.text.trim().isNotEmpty
+          ? _currentPasswordController.text.trim()
+          : null,
+      newPassword: _newPasswordController.text.trim().isNotEmpty
+          ? _newPasswordController.text.trim()
+          : null,
+    );
 
-      // Atualizar dados do usuário
-      final updatedUser = UserModel(
-        id: authService.currentUser!.id,
-        name: _nameController.text,
-        email: authService.currentUser!.email,
-        phone: _phoneController.text,
-        password: _newPasswordController.text.isNotEmpty
-            ? _newPasswordController.text
-            : authService.currentUser!.password,
-        role: authService.currentUser!.role,
-      );
-
-      await settingsProvider.updateProfile(updatedUser);
-      await authService.updateUser(updatedUser);
-
+    if (success) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Perfil atualizado com sucesso')),
         );
         Navigator.pop(context);
       }
-    } catch (e) {
+    } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao atualizar perfil: $e')),
+          SnackBar(
+            content: Text(authProvider.error ?? 'Erro ao atualizar perfil'),
+          ),
         );
       }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+    }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao atualizar perfil: $e')),
+      );
+    }
+  } finally {
+    if (mounted) {
+      setState(() => _isLoading = false);
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthService>().currentUser;
+    final user = context.watch<AuthProvider>().currentUser!;
     if (user == null) {
       return const Scaffold(
         body: Center(

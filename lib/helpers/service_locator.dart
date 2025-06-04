@@ -1,13 +1,11 @@
 import 'package:get_it/get_it.dart';
-import '../services/auth_service.dart';
-import '../services/route_service.dart';
+import 'package:roteipro/providers/notification_provider.dart';
+import '../providers/auth_provider.dart';
 
 final getIt = GetIt.instance;
 
 void setupServiceLocator() {
-  // Registrando o AuthService como um singleton
-  getIt.registerLazySingleton<AuthService>(() => AuthService());
-  
-  // Registrando o RouteService como um singleton
-  getIt.registerLazySingleton<RouteService>(() => RouteService());
+  // Registrando o AuthProvider como um singleton
+  getIt.registerLazySingleton<AuthProvider>(() => AuthProvider());
+  getIt.registerLazySingleton<NotificationProvider>(() => NotificationProvider());  
 } 

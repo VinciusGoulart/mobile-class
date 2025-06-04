@@ -1,0 +1,37 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "rotei-pro",
+          "appId": "1:810666233216:android:153accca026e3442364565",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "rotei-pro",
+          "configurations": {
+            "android": "1:810666233216:android:153accca026e3442364565",
+            "ios": "1:810666233216:ios:8873f528ff5fa000364565",
+            "web": "1:810666233216:web:7129c35fccfb1088364565"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

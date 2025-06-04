@@ -77,10 +77,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final allCompletedRoutes = provider.routes
+          final allCompletedRoutes = provider.routes!
               .where((route) => route.status == 'Concluída')
               .toList();
-          final allCancelledRoutes = provider.routes
+          final allCancelledRoutes = provider.routes!
               .where((route) => route.status == 'Cancelada')
               .toList();
 

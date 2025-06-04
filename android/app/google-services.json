@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "810666233216",
+    "project_id": "rotei-pro",
+    "storage_bucket": "rotei-pro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:810666233216:android:153accca026e3442364565",
+        "android_client_info": {
+          "package_name": "com.example.roteipro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZiAV2CsswR5CobDKwRg6thjDBIY-CQD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

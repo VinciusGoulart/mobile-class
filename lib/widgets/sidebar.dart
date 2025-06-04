@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/auth_service.dart';
+
+import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
-    final user = authService.currentUser;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final notificationProvider = Provider.of<NotificationProvider>(context);
+    final user = authProvider.currentUser!;
+
+    final unreadCount = notificationProvider.notifications
+        .where((n) => !n.isRead)
+        .length;
 
     return Drawer(
       child: ListView(
@@ -40,6 +47,33 @@ class Sidebar extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.notifications),
+            title: Row(
+              children: [
+                const Text('Notificações'),
+                const SizedBox(width: 8),
+                if (unreadCount > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      unreadCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            onTap: () {
+              Navigator.pushNamed(context, '/notifications');
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Perfil'),
             onTap: () {
@@ -58,7 +92,7 @@ class Sidebar extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text('Sair'),
             onTap: () {
-              authService.logout();
+              authProvider.logout();
               Navigator.pushReplacementNamed(context, '/login');
             },
           ),
@@ -66,4 +100,4 @@ class Sidebar extends StatelessWidget {
       ),
     );
   }
-} 
+}

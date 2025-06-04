@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../models/user_model.dart';
-import '../services/auth_service.dart';
+import 'auth_provider.dart';
 import '../helpers/service_locator.dart';
 
 class RegisterProvider extends ChangeNotifier {
@@ -106,8 +106,8 @@ class RegisterProvider extends ChangeNotifier {
           role: 'admin',
         );
 
-        final authService = getIt<AuthService>();
-        final success = await authService.register(user);
+        final authProvider = getIt<AuthProvider>();
+        final success = await authProvider.register(user);
 
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
